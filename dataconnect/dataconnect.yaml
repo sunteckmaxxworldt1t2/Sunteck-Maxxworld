@@ -1,0 +1,12 @@
+specVersion: "v1"
+serviceId: "Sunteck"
+location: "asia-south1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "sunteck-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

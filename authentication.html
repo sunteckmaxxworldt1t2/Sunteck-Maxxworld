@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunteck Maxx World</title>
+  <link rel="stylesheet" href="css/authentication.css">
+  <link rel="shortcut icon" href="image/logo1.png" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .input_wrap label i { margin-right: 8px; color: #fff; font-size: 16px; vertical-align: middle; }
+    .hidden { display: none; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: auto; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+<section class="header">
+   <nav>
+    <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Logo" /></a>
+    <div class="nav-links" ">
+      <!-- <span class="icon" onclick="hidemenu()">✕</span> -->
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Recent Events</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="facilities.html">Facilities</a></li>
+        <li><a href="facilities.html">Do & Don't</a></li>
+        <li><a href="adminlogin.html">Admin Login</a></li>
+      </ul>
+    </div>
+    <!-- <span class="icon" onclick="showmenu()">☰</span> -->
+  </nav>
+
+  <div class="wrapper">
+    <div class="r_form_wrap">
+      <div class="title"><p>Welcome</p></div>
+
+      <!-- Login -->
+      <div id="Login" class="tabcontent">
+        <form id="loginForm">
+          <div class="input_wrap">
+            <label><i class="fa fa-envelope"></i> Email Address</label>
+            <div class="input_item"><input type="email" id="login_email" required></div>
+          </div>
+          <div class="input_wrap">
+            <label><i class="fa fa-lock"></i> Password</label>
+            <div class="input_item"><input type="password" id="login_password" required></div>
+          </div>
+          <div id="loginLoading" class="hidden"><div class="spinner"></div></div>
+          <input type="button" class="button" value="Login" onclick="loginUser()">
+          <p style="color:white; text-align:center; margin-top: 15px;">
+            <a href="#" style="color:#FFD700;" onclick="openForm('Forgot')">Forgot Password?</a>
+          </p>
+        </form>
+      </div>
+
+      <!-- Forgot -->
+      <div id="Forgot" class="tabcontent hidden">
+        <form id="forgotForm">
+          <div class="input_wrap">
+            <label><i class="fa fa-envelope"></i> Enter your registered Email</label>
+            <div class="input_item"><input type="email" id="forgot_email" required></div>
+          </div>
+          <div id="forgotLoading" class="hidden"><div class="spinner"></div></div>
+          <input type="button" class="button" value="Send Reset Email" onclick="forgotPassword()">
+          <input type="button" class="button" value="Back to Login" onclick="openForm('Login')">
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  window.onload = () => openForm('Login');
+
+  function openForm(formName) {
+    document.querySelectorAll('.tabcontent').forEach(el => el.classList.add('hidden'));
+    document.getElementById(formName).classList.remove('hidden');
+  }
+
+  function showmenu() { document.getElementById("navLinks").style.right = "0"; }
+  function hidemenu() { document.getElementById("navLinks").style.right = "-200px"; }
+
+  async function loginUser() {
+    document.getElementById('loginLoading').classList.remove('hidden');
+    const email = document.getElementById('login_email').value.trim();
+    const password = document.getElementById('login_password').value.trim();
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      if (!userCredential.user.emailVerified) {
+        alert("Please verify your email before login.");
+        await auth.signOut();
+        return;
+      }
+      alert("Login successful! Redirecting...");
+      window.location.href = 'userprofile.html';
+    } catch (err) {
+      alert("Login Error: " + err.message);
+    } finally {
+      document.getElementById('loginLoading').classList.add('hidden');
+    }
+  }
+
+  async function forgotPassword() {
+    document.getElementById('forgotLoading').classList.remove('hidden');
+    const email = document.getElementById('forgot_email').value.trim();
+    try {
+      await auth.sendPasswordResetEmail(email);
+      alert("Reset email sent successfully.");
+      openForm('Login');
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      document.getElementById('forgotLoading').classList.add('hidden');
+    }
+  }
+</script>
+
+</body>
+</html>

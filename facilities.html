@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunteck Maxx World</title>
+  <link rel="shortcut icon" href="image/logo1.png" type="image/png">
+  <link rel="stylesheet" href="css/facilities.CSS">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+</head>
+<body>
+<div class="overlay"></div>
+<header class="header">
+ <nav>
+    <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Logo" /></a>
+    <div class="nav-links" id="navLinks">
+      <span class="icon" onclick="hidemenu()">✕</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Recent Events</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="facilities.html">Do & Don't</a></li>
+        <li><a href="adminlogin.html">Admin Login</a></li>
+      </ul>
+    </div>
+    <span class="icon" onclick="showmenu()">☰</span>
+  </nav>
+<main>
+<section class="facilities-container">
+  <div class="text-box">
+    <h1>Society's Facilities</h1>
+<p>
+At Sunteck Maxx World T1 & T2, we take immense pride in curating a lifestyle where convenience meets elegance, and every amenity echoes our commitment to community well-being and holistic living.
+
+Our residents enjoy a symphony of thoughtfully designed facilities — from the grandeur of the <b>Auditorium Hall</b> that hosts memorable gatherings and festive moments, to the energy of a <b>modern Gymnasium</b> where wellness takes center stage.
+
+The <b>Kids Play-Zone</b> sparkles with imagination and joy, while our <b>Swimming Pool</b> offers serenity in every splash.
+
+Architectural brilliance is showcased through our <b>Expansive Facade</b>, setting the tone for sophistication, while the <b>Tranquil In-House Waterbody</b> provides moments of calm reflection amidst the urban rhythm.
+
+For leisure and camaraderie, residents can engage in friendly competition at the <b>Pool Table</b>, sharpen their intellect over a game of <b>Chess</b>, or embrace movement and team spirit at the <b>Badminton Court</b>.
+
+Together, these facilities aren’t just amenities — they are pillars of an elevated community experience, nurturing wellness, bonding, and an inspired way of life in every corner.
+</p>
+
+
+
+  </div>
+  <div style="text-align: center;">
+        <a href="https://www.linkedin.com/in/ideepaktiwari/" class="hero-btn">Do & Don't</a>
+      </div>
+</section>
+</main>
+</header>
+<section class="facilities-container">
+<h1 style="align-items: center; text-align: center;">Our Facilities</h1>
+<p style="align-items: center; text-align: center;">Facilities provided for Members of Sunteck Maxx World T1 & T2</p>
+<div class="facilities-row">
+  <div class="facilities-col">
+    <img src="image/hall.png" alt="Rajesh Sharma">
+    <h3>Auditorium Hall</h3>
+    <p>A grand space where the echoes of celebrations, community meetings, and cultural festivities unite residents in joy and harmony.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/Gymnasium.png" alt="Manoj Singh">
+    <h3>Gymnasium</h3>
+    <p>A state-of-the-art fitness sanctuary, empowering members to sculpt strength, resilience, and vitality for a balanced lifestyle.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/Kids_Play-Zone.png" alt="Eshan Kashyap">
+    <h3>Kids Play-Zone</h3>
+    <p>A vibrant wonderland where laughter blossoms and children nurture friendships through joyful play and boundless imagination.</p>
+  </div>
+</div>
+</section>
+<section class="facilities-container">
+<div class="facilities-row">
+  <div class="facilities-col">
+    <img src="image/Swimmingpool.png" alt="Shadab Suleman">
+    <h3>Swimming Pool</h3>
+    <p>A refreshing oasis inviting residents to unwind, rejuvenate, and embrace leisure with every graceful ripple and splash.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/Expansive-Facade.png" alt="Jagdish Shukla">
+    <h3>Expansive Facade</h3>
+    <p>An architectural marvel reflecting elegance and grandeur, welcoming every resident into a world of pride and sophistication.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/Tranquil-In-House-Waterbody.png" alt="Dhruv Ashar">
+    <h3>Tranquil In-House Waterbody</h3>
+    <p>A serene water sanctuary fostering inner peace, offering a meditative escape from the bustling pace of urban life.</p>
+  </div>
+</div>
+</section>
+<section class="facilities-container">
+<div class="facilities-row">
+  <div class="facilities-col">
+    <img src="image/IndoorGamesZones.png" alt="Vaibhav Pathak">
+    <h3>Pool Table</h3>
+    <p>A cozy corner for friendly rivalries and relaxed evenings, where every cue strike brings a moment of playful connection.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/IndoorGamesZone.png" alt="Aditya Aamkkar">
+    <h3>Chess</h3>
+    <p>A thoughtful arena where minds meet and strategies unfold, cultivating focus, patience, and the art of graceful competition.</p>
+  </div>
+  <div class="facilities-col">
+    <img src="image/badmintoncourt.png" alt="Rakesh Koyande">
+    <h3>Badminton Court</h3>
+    <p>An energetic stage for spirited matches, where agility, teamwork, and enthusiasm soar with every shuttle smash.</p>
+  </div>
+</div>
+</section>
+<div class="none_div"></div>
+<script>
+const navLinks = document.getElementById("navLinks");
+function showmenu() {
+  navLinks.style.right = "0";
+}
+function hidemenu() {
+  navLinks.style.right = "-200px";
+}
+</script>
+</body>
+</html>

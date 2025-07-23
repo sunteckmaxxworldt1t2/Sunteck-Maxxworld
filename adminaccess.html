@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sunteck Maxx World</title>
+  <link rel="stylesheet" href="css/adminaccess.css" />
+  <link rel="shortcut icon" href="image/logo1.png" type="image/svg+xml" />
+
+  <style>
+    .progressBar { width: 100%; background: #eee; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+    .progress { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
+    .img-preview { max-width: 100px; margin: 5px; border-radius: 5px; }
+
+     #adminEventContainer {
+    transition: all 0.3s ease-in-out;
+  }
+
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc, onSnapshot, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    window.previewImages = function () {
+      const container = document.getElementById("imagePreviewContainer");
+      const files = document.getElementById("eventImages").files;
+      container.innerHTML = "";
+      for (let file of files) {
+        const img = document.createElement("img");
+        img.classList.add("img-preview");
+        img.src = URL.createObjectURL(file);
+        container.appendChild(img);
+      }
+    };
+
+    window.submitEvent = async function () {
+      const title = document.getElementById("eventTitle").value.trim();
+      const description = document.getElementById("eventDescription").value.trim();
+      const datetime = document.getElementById("eventDateTime").value;
+      const imageFiles = document.getElementById("eventImages").files;
+      const progressBar = document.getElementById("progressBar");
+      const statusText = document.getElementById("status");
+
+      if (!title || !description || !datetime) {
+        alert("⚠️ Please fill in all fields including date & time.");
+        return;
+      }
+
+      if (imageFiles.length === 0) {
+        alert("⚠️ Please select at least one image.");
+        return;
+      }
+
+      try {
+        const imageURLs = [];
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          const fileName = `${Date.now()}_${file.name}`;
+          const storageRef = ref(storage, `event_images/${fileName}`);
+          const uploadTask = uploadBytesResumable(storageRef, file);
+
+          await new Promise((resolve, reject) => {
+            uploadTask.on(
+              "state_changed",
+              (snapshot) => {
+                const fileProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                const totalProgress = ((i + fileProgress / 100) / imageFiles.length) * 100;
+                progressBar.style.width = `${totalProgress}%`;
+                statusText.innerText = `Uploading ${i + 1} of ${imageFiles.length}... (${file.name})`;
+              },
+              (error) => {
+                console.error("Upload error:", error);
+                reject(error);
+              },
+              async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                imageURLs.push(downloadURL);
+                resolve();
+              }
+            );
+          });
+        }
+
+        await addDoc(collection(db, "events"), {
+          title,
+          description,
+          eventDateTime: Timestamp.fromDate(new Date(datetime)),
+          images: imageURLs,
+          timestamp: serverTimestamp()
+        });
+
+        alert("✅ Event submitted successfully!");
+        document.getElementById("eventTitle").value = "";
+        document.getElementById("eventDescription").value = "";
+        document.getElementById("eventDateTime").value = "";
+        document.getElementById("eventImages").value = "";
+        document.getElementById("imagePreviewContainer").innerHTML = "";
+        progressBar.style.width = "0%";
+        statusText.innerText = "Upload complete.";
+      } catch (error) {
+        console.error("❌ Upload error:", error);
+        alert("❌ Failed to submit event.");
+        statusText.innerText = "Upload failed.";
+      }
+    };
+
+    window.fetchFlatOwners = function () {
+  const flatOwnerList = document.getElementById("flatOwnerList");
+  flatOwnerList.innerHTML = "<p style='color: gray;'>Loading flat owner details...</p>";
+
+  const ownerQuery = query(collection(db, "flatOwners"), orderBy("timestamp", "desc"));
+
+  onSnapshot(ownerQuery, async (snapshot) => {
+    flatOwnerList.innerHTML = "";
+    if (snapshot.empty) {
+      flatOwnerList.innerHTML = "<p style='color: gray;'>No flat owner data found.</p>";
+    } else {
+      for (let docSnap of snapshot.docs) {
+        const owner = docSnap.data();
+        const flatNo = owner.flatNumber;
+
+        // Fetch complaints for this flat
+        const complaintQuery = query(collection(db, "complaints"));
+        const complaintSnapshot = await getDocs(complaintQuery);
+        const complaints = complaintSnapshot.docs
+          .map(doc => doc.data())
+          .filter(c => c.flatNumber === flatNo);
+
+        const card = document.createElement("div");
+        card.style = "margin:10px 0;padding:15px;border:1px solid #ddd;border-radius:6px;background:#f1f7ff;";
+
+        let complaintList = complaints.length
+          ? complaints.map(c => `<li>🛠️ ${c.issue} - <strong>${c.status}</strong></li>`).join("")
+          : "<li>No complaints</li>";
+
+        card.innerHTML = `
+          <h4 style="color:#0e65e0;">🏠 ${owner.name} (Flat ${owner.flatNumber})</h4>
+          <p><strong>Phone:</strong> ${owner.phone}<br><strong>Email:</strong> ${owner.email}</p>
+          <p><strong>Complaints:</strong></p>
+          <ul style="padding-left: 20px;">${complaintList}</ul>
+          <small style="color:#888;">Added on: ${owner.timestamp?.toDate().toLocaleString() || "Unknown"}</small>
+        `;
+        flatOwnerList.appendChild(card);
+      }
+    }
+  }, (error) => {
+    console.error("Error fetching flat owner details:", error);
+    flatOwnerList.innerHTML = "<p style='color:red;'>Failed to load flat owner data.</p>";
+  });
+};
+
+
+    window.fetchEvents = function () {
+      const eventList = document.getElementById("eventList");
+      eventList.innerHTML = "<p style='color: gray;'>Loading events...</p>";
+
+      const q = query(collection(db, "events"), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snapshot) => {
+        eventList.innerHTML = "";
+        if (snapshot.empty) {
+          eventList.innerHTML = "<p style='color: gray;'>No events found.</p>";
+        } else {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const card = document.createElement("div");
+            card.style = "margin:10px 0;padding:15px;border:1px solid #ddd;border-radius:6px;background:#f9f9f9;";
+
+            let imgs = "";
+            if (data.images?.length) {
+              imgs = `
+  <div style="display: flex; gap: 10px; overflow-x: auto; margin-top: 10px; padding-bottom: 5px;">
+    ${data.images.map(u => `<img src="${u}" style="height: 100px; border-radius: 6px; flex-shrink: 0;">`).join("")}
+  </div>
+`;
+
+            }
+
+            card.innerHTML = `
+              <h3 style="color:#e0120b;">${data.title}</h3>
+              <p class="truncate-description">${data.description}</p>
+              ${data.eventDateTime ? `<p><strong>Date & Time:</strong> ${data.eventDateTime.toDate().toLocaleString()}</p>` : ""}
+              ${imgs}
+              <small style="color:#888;">${data.timestamp?.toDate().toLocaleString() || "Just now"}</small>
+              <br><button onclick="deleteEvent('${docSnap.id}')" style="margin-top:8px;padding:6px 12px;background:#ff4d4d;color:white;border:none;border-radius:4px;">🗑️ Delete</button>
+            `;
+            eventList.appendChild(card);
+          });
+        }
+      }, (error) => {
+        console.error("Error loading events:", error);
+        eventList.innerHTML = "<p style='color:red;'>Failed to load events.</p>";
+      });
+    };
+
+    window.deleteEvent = async function (id) {
+      if (confirm("Are you sure you want to delete this event?")) {
+        try {
+          await deleteDoc(doc(db, "events", id));
+          alert("🗑️ Event deleted.");
+        } catch (error) {
+          console.error("❌ Deletion error:", error);
+          alert("❌ Couldn't delete event.");
+        }
+      }
+    };
+
+    window.onload = () => fetchEvents();
+  </script>
+</head>
+
+<body>
+  <section class="header">
+     <nav>
+    <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Logo" /></a>
+    <div class="nav-links" id="navLinks">
+      <span class="icon" onclick="hidemenu()">✕</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Recent Events</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="facilities.html">Facilities</a></li>
+      </ul>
+    </div>
+    <span class="icon" onclick="showmenu()">☰</span>
+  </nav>
+
+    <!-- 👇 Redirect container -->
+<div onclick="window.location.href='flatownerregistration.html'" class="redirect-box flat-owner">
+  <h2 style="color: #d80000;">📁 Create Flat Owner Account</h2>
+</div>
+
+<!-- 🌐 Redirect to External Website -->
+<div onclick="window.location.href='https://sites.google.com/sunteckmaxxworldt1t2society.com/vendormanagement/home'" class="redirect-box dee-website">
+  <h2 style="color: #00796b;">🌐 Society Management System</h2>
+</div>
+
+
+
+<!-- 🌟 Toggleable Admin Event Section -->
+<div style="max-width: 700px; margin: auto;">
+  <h2 onclick="toggleAdminEvent()" style="cursor: pointer; background: #e0120b; color: white; padding: 15px; border-radius: 6px; text-align: center;">
+    📤 Admin: Submit or View Events
+  </h2>
+
+  <div id="adminEventContainer" style="display: none; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    
+    <!-- ✍️ Event Submission Form -->
+    <h3 style="text-align: center; color: #e0120b;">Submit Event</h3>
+    <input type="text" id="eventTitle" placeholder="Enter Event Title" style="width: 100%; padding: 10px; margin: 10px 0;" />
+    <textarea id="eventDescription" placeholder="Enter Event Description" style="width: 100%; padding: 10px; height: 100px;"></textarea>
+    
+    <label for="eventDateTime">Select Date & Time:</label>
+    <input type="datetime-local" id="eventDateTime" style="width: 100%; padding: 10px; margin: 10px 0;" />
+    
+    <input type="file" id="eventImages" multiple accept="image/*" style="margin: 10px 0;" onchange="previewImages()" />
+    <div id="imagePreviewContainer" style="display:flex; flex-wrap: wrap;"></div>
+    <div class="progressBar"><div class="progress" id="progressBar"></div></div>
+    <span id="status">No upload yet</span><br>
+    <button onclick="submitEvent()" style="margin-top: 10px; padding: 10px 20px; background: #e0120b; color: white; border: none; border-radius: 5px;">Submit</button>
+
+    <!-- 📋 Recent Events -->
+    <div class="event-container" style="margin-top: 30px;">
+      <h3>📅 Recent Events</h3>
+      <div id="eventList" class="event-list">
+        <p style="color: gray;">Loading events...</p>
+        <p style="text-align:center; font-size: 12px; color: #999;">Swipe left/right to view more events ➡️</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+  <script>
+  function toggleFlatOwnerDetails() {
+    const container = document.getElementById("flatOwnerDetailsContainer");
+    const isVisible = container.style.display === "block";
+    container.style.display = isVisible ? "none" : "block";
+    if (!isVisible) fetchFlatOwners();  // Fetch only when shown
+  }
+</script>
+
+  <script>
+  function toggleAdminEvent() {
+    const container = document.getElementById("adminEventContainer");
+    const isVisible = container.style.display === "block";
+    container.style.display = isVisible ? "none" : "block";
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: myFirstFont;
+    src: url(../Poppins/Poppins-Regular.ttf);
+}
+
+@font-face {
+    font-family: bold;
+    src: url(../Poppins/Poppins-Bold.ttf);
+}
+
+body {
+    font-family: myFirstFont, Verdana, Geneva, Tahoma, sans-serif;
+    cursor: default;
+}
+
+h1 {
+    font-family: bold;
+    font-size: 36px;
+    font-weight: 300;
+}
+
+p {
+    color: #777;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+    padding: 10px;
+}
+
+/* Custom scrollbar */
+body::-webkit-scrollbar {
+    width: 5px !important;
+    height: 5px !important;
+}
+
+body::-webkit-scrollbar-track {
+    background: #3838387c !important;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #e0120ba4 !important;
+    border: 1px solid #ff020279 !important;
+    border-radius: 1px !important;
+}
+
+/* Header Section */
+.header {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(rgba(4,9,30,0.6), rgba(4,9,30,0.6)), url(../image/background.jpg);
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+nav {
+    display: flex;
+    padding: 2% 6%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav img {
+    width: 150px;
+}
+
+.nav-links {
+    flex: 1;
+    text-align: right;
+}
+
+.nav-links ul li {
+    list-style: none;
+    display: inline-block;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.nav-links ul li::after {
+    content: '';
+    width: 0%;
+    height: 2px;
+    background: #ff0000;
+    display: block;
+    margin: auto;
+    transition: 0.5s;
+}
+
+.nav-links ul li:hover::after {
+    width: 100%;
+}
+
+.icon {
+    display: none;
+}
+
+/* Register Form Section */
+#Register {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background: #ffffffdb;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+#Register form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.input_wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.input_wrap label {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #222;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input_item input,
+.input_item select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.input_item input:focus,
+.input_item select:focus {
+  border-color: #e0120b;
+  outline: none;
+  background-color: #fff;
+}
+
+/* Register Button Style */
+.button {
+  background: #e0120b;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button:hover {
+  background: #c00e0a;
+}
+
+/* Spinner */
+#registerLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 4px solid #e0120b;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.admin-button {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: #e0120b;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid #e0120b;
+  transition: 0.3s ease;
+}
+
+.admin-button:hover {
+  background-color: #e0120b;
+  color: #fff;
+}
+
+
+/* Responsive Design */
+@media screen and (max-width: 600px) {
+  #Register {
+    margin: 30px 20px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        position: absolute;
+        right: 0;
+        top: 60px;
+        background: #333;
+        width: 100%;
+        display: none;
+    }
+
+    .nav-links ul {
+        display: block;
+    }
+
+    .nav-links ul li {
+        display: block;
+        padding: 10px;
+    }
+
+    .icon {
+        display: block;
+        cursor: pointer;
+    }
+}
+/* Spacer */
+.none_div {
+    height: 100px;
+}

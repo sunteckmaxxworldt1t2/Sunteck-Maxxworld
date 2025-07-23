@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Official society website for Sunteck Maxx World - Stay informed, connected and involved." />
+  <meta name="keywords" content="Sunteck Maxx World, Housing Society, Community, Events, Residents, Facilities" />
+  <meta name="author" content="Dee" />
+  <title>Sunteck Maxx World</title>
+  <link rel="stylesheet" href="css/main_style.css" />
+  <link rel="shortcut icon" href="image/logo1.png" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Header -->
+<section class="header">
+  <nav>
+    <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Logo" /></a>
+    <div class="nav-links" id="navLinks">
+      <span class="icon" onclick="hidemenu()">✕</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="events.html">Recent Events</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="facilities.html">Facilities</a></li>
+        <li><a href="facilities.html">Do & Don't</a></li>
+        <li><a href="adminlogin.html">Admin Login</a></li>
+        <li id="loginLink"><a href="authentication.html">Flat Owner's Login</a></li>
+        <li id="userNameDisplay" style="display:none;">
+          <a href="#" id="profileLink">Hi, <span id="userName"></span></a>
+        </li>
+      </ul>
+    </div>
+    <span class="icon" onclick="showmenu()">☰</span>
+  </nav>
+
+
+  <!-- Introduction Text -->
+        <div class="text-box">
+            <h1>Sunteck Maxxworld</h2>
+            <h2>T1 & T2 CHS.LTD.</h1>
+            <div class="intro-box">
+                <p><b>The purpose of this website for our society is to enhance transparency, communication, and accessibility among its members and residents. It will serve as a central platform for sharing important notices, meeting agendas, maintenance schedules, and community updates in a timely and organized manner. It will help residents to stay informed, submit queries or service requests, and access essential documents conveniently from anywhere. Moreover, this will foster a sense of community and accountability by promoting active participation and engagement in society affairs. In today’s digital age, it also reflects our society’s commitment to modernization and efficient management.</b></p>
+                <div style="text-align: center;">
+        <a href="events.html" class="hero-btn">Events</a>
+      </div>
+            </div>
+        </div>
+  <!-- <div class="text-box">
+    <div class="intro-box">
+      <h1>Sunteck Maxxworld</h1>
+      <h2>T1 & T2 CHS.LTD.</h2>
+      <p><b>The purpose of this website for our society is to enhance transparency, communication, and accessibility among its members and residents. It will serve as a central platform for sharing important notices, meeting agendas, maintenance schedules, and community updates in a timely and organized manner. It will help residents to stay informed, submit queries or service requests, and access essential documents conveniently from anywhere. Moreover, this will foster a sense of community and accountability by promoting active participation and engagement in society affairs. In today’s digital age, it also reflects our society’s commitment to modernization and efficient management.</b></p>
+      <div style="text-align: center;">
+        <a href="events.html" class="hero-btn">Events</a>
+      </div>
+    </div>
+  </div> -->
+</section>
+
+<!-- Events Section -->
+<main>
+  <section class="event-section">
+    <h2>Upcoming Events</h2>
+    <div class="event-container" id="eventContainer"></div>
+    <div class="view-all-notifications" style="text-align: center; margin-top: 20px;">
+      <a href="events.html" class="hero-btn" style="font-size: 1rem; padding: 10px 25px;">View All Notifications</a>
+    </div>
+  </section>
+</main>
+
+<!-- Facilities Section -->
+<section class="facilities">
+  <h1>Our Facilities</h1>
+  <p>Facilities provided for Members of Sunteck Maxxworld</p>
+  <div class="row">
+    <div class="facilities-col">
+      <img src="image/hall.png" alt="Function Hall">
+      <h3>Function Hall</h3>
+      <p>"Where moments turn into memories — celebrate life’s special occasions with grace and grandeur."</p>
+    </div>
+    <div class="facilities-col">
+      <img src="image/Swimmingpool.png" alt="Swimming Pool">
+      <h3>Swimming Pool</h3>
+      <p>"Dive into relaxation, float your worries away — your personal oasis of calm and refreshment."</p>
+    </div>
+    <div class="facilities-col clickable">
+      <a href="facilities.html">
+        <img src="image/viewmore.png" alt="Gym">
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<section class="footer">
+  <h4>About Us</h4>
+  <p>Innovation for a better future</p>
+  <p id="copyright">Made with love and passion for Sunteck Maxxworld Tower 1 & Tower 2 CHS Limited</p>
+</section>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Config -->
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const database = firebase.database();
+  const db = firebase.firestore();
+
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const snapshot = await database.ref('users/' + uid).once('value');
+      const userData = snapshot.val();
+      document.getElementById("loginLink").style.display = "none";
+      document.getElementById("userNameDisplay").style.display = "inline";
+      document.getElementById("userName").innerText = userData?.name || "User";
+      document.getElementById("profileLink").addEventListener('click', () => {
+        window.location.href = `userprofile.html?uid=${uid}`;
+      });
+    } else {
+      document.getElementById("loginLink").style.display = "inline";
+      document.getElementById("userNameDisplay").style.display = "none";
+    }
+  });
+
+  const navLinks = document.getElementById("navLinks");
+  function showmenu() { navLinks.style.right = "0"; }
+  function hidemenu() { navLinks.style.right = "-200px"; }
+
+  async function fetchEvents() {
+    const eventContainer = document.getElementById("eventContainer");
+    eventContainer.innerHTML = "";
+
+    const querySnapshot = await db.collection("events")
+      .orderBy("eventDateTime", "desc")
+      .limit(3)
+      .get();
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const eventId = doc.id;
+
+      const eventCard = document.createElement("div");
+      eventCard.className = "event-card";
+      eventCard.style.cursor = "pointer";
+      eventCard.innerHTML = `
+        <h2>${data.title || "No Title"}</h2>
+        <p class="truncate-description"><strong>Description:</strong> ${data.description || "N/A"}</p>
+        <p><strong>Date & Time:</strong> ${new Date(data.eventDateTime?.seconds * 1000).toLocaleString()}</p>
+        <div class="event-images">
+          ${(data.images || []).slice(0, 3).map(url => `<img src="${url}" alt="Event Image" />`).join('')}
+        </div>
+      `;
+
+      eventCard.addEventListener("click", () => {
+        window.location.href = `events.html?id=${eventId}`;
+      });
+
+      eventContainer.appendChild(eventCard);
+    });
+  }
+  fetchEvents();
+</script>
+</body>
+</html>

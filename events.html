@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="The Gokul Global University at Sidhpur provides one of the earliest forms of technical studies, which has been vital in setting up the standard of brilliance.">
+    <meta name="keywords" content="Gokul Global University, College">
+    <meta name="author" content="Jaydipsinh Solanki">
+    <title>Sunteck Maxx World</title>
+    <link rel="stylesheet" href="css/events.css">
+    <link rel="shortcut icon" href="image/logo1.png" type="image/svg+xml">
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <section class="header">
+         <nav>
+    <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Logo" /></a>
+    <div class="nav-links" id="navLinks">
+      <span class="icon" onclick="hidemenu()">✕</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="facilities.html">Facilities</a></li>
+        <li><a href="facilities.html">Do & Don't</a></li>
+        <li><a href="adminlogin.html">Admin Login</a></li>
+      </ul>
+    </div>
+    <span class="icon" onclick="showmenu()">☰</span>
+  </nav>
+    
+
+      <h1>📅 Recent Events</h1>
+  <div class="event-list">
+    <p style="color: gray;">Loading events...</p>
+  </div>
+
+  <!-- Modal Popup -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalDescription"></p>
+      <p id="modalDateTime"></p>
+      <div class="modal-images" id="modalImageContainer">
+        <!-- Images will be appended here dynamically -->
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const eventList = document.querySelector(".event-list");
+
+    const eventModal = document.getElementById("eventModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDescription = document.getElementById("modalDescription");
+    const modalDateTime = document.getElementById("modalDateTime");
+    const modalImageContainer = document.getElementById("modalImageContainer");
+    const closeBtn = document.querySelector(".close-btn");
+
+    // Function to open modal with event data
+    function openModal(data) {
+      eventModal.style.display = "flex";
+      modalTitle.textContent = data.title;
+      modalDescription.textContent = data.description;
+      modalDateTime.textContent = data.eventDateTime?.toDate().toLocaleString() || "";
+
+      // Clear and populate image scroll area
+      modalImageContainer.innerHTML = "";
+      (data.images || []).forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Event Image";
+        modalImageContainer.appendChild(img);
+      });
+    }
+
+    // Close modal
+    closeBtn.onclick = () => {
+      eventModal.style.display = "none";
+    };
+
+    window.onclick = (e) => {
+      if (e.target === eventModal) {
+        eventModal.style.display = "none";
+      }
+    };
+
+    const fetchEvents = () => {
+      eventList.innerHTML = "<p style='color: gray;'>Loading events...</p>";
+      const q = query(collection(db, "events"), orderBy("timestamp", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        eventList.innerHTML = "";
+
+        if (snapshot.empty) {
+          eventList.innerHTML = "<p style='color: gray;'>No events found.</p>";
+          return;
+        }
+
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "event-card";
+
+          const imagesHTML = data.images?.length ? `
+            <div class="event-images ${data.images.length > 1 ? 'multi-image' : ''}">
+              ${data.images.map(url => `<img src="${url}" alt="Event Image" loading="lazy">`).join("")}
+            </div>` : "";
+
+          card.innerHTML = `
+            <h3 style="color:#e0120b;">${data.title}</h3>
+            <p class="truncate-description">${data.description}</p>
+            ${data.eventDateTime ? `<p class="event-date">📌 ${data.eventDateTime.toDate().toLocaleString()}</p>` : ""}
+            ${imagesHTML}
+            <p class="event-timestamp">🕒 ${data.timestamp?.toDate().toLocaleString() || "Just now"}</p>
+          `;
+
+          card.addEventListener("click", () => openModal(data));
+          eventList.appendChild(card);
+        });
+      }, (error) => {
+        console.error("Error loading events:", error);
+        eventList.innerHTML = "<p style='color:red;'>Failed to load events.</p>";
+      });
+    };
+
+    fetchEvents();
+  </script>
+
+    <!-- JavaScript -->
+    <!-- <script src="javascript/main_script.js"></script> -->
+
+</body>
+</html>

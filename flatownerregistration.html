@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="description" content="The Gokul Global University at Sidhpur provides one of the earliest forms of technical studies, which has been vital in setting up the standard of brilliance.">
+  <meta name="keywords" content="Gokul Global University, College">
+  <meta name="author" content="Jaydipsinh Solanki">
+  <title>Sunteck Maxx World</title>
+  <link rel="stylesheet" href="css/flatownerregistration.css">
+  <link rel="shortcut icon" href="image/logo1.png" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+
+<body>
+  <!-- Header Navigation -->
+  <section class="header">
+    <nav>
+      <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Logo"></a>
+      <div class="nav-links" id="navLinks">
+        <span class="icon" onclick="hidemenu()">✕</span>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#course_call">Notification</a></li>
+          <li><a href="aboutus.html">About Us</a></li>
+        </ul>
+      </div>
+      <span class="icon" onclick="showmenu()">☰</span>
+    </nav>
+  
+
+  <!-- Register -->
+  <div id="Register" class="tabcontent">
+    <form id="registerForm">
+      <div class="input_wrap"><label><i class="fa fa-user"></i> Your Name</label><div class="input_item"><input type="text" id="yourname" required></div></div>
+      <div class="input_wrap"><label><i class="fa fa-envelope"></i> Email Address</label><div class="input_item"><input type="email" id="emailaddress" required></div></div>
+      <input type="hidden" id="register_password" value="Password@123">
+      <div class="input_wrap"><label><i class="fa fa-phone-square"></i> Phone</label><div class="input_item"><input type="tel" id="phone" required></div></div>
+      <div class="input_wrap"><label><i class="fa fa-list"></i> Building Wing</label><div class="input_item"><select id="type"><option value="T1">T1</option><option value="T2">T2</option></select></div></div>
+      <div class="input_wrap"><label><i class="fa fa-building"></i> Floor</label><div class="input_item"><select id="floor"><option value="">Select Floor</option><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option><option value="4">Floor 4</option></select></div></div>
+      <div class="input_wrap"><label><i class="fa fa-door"></i> Room</label><div class="input_item"><input type="text" id="room" required></div></div>
+      <div id="registerLoading" class="hidden"><div class="spinner"></div></div>
+      <input type="button" class="button" value="Register" onclick="registerUser()">
+      <a href="adminaccess.html" class="admin-button">Go to Admin Access</a>
+    </form>
+  </div>
+    <!-- Admin Access Redirect Button -->
+
+    <footer>
+        <p>&copy; 2023 Sunteck Maxx World. All rights reserved.</p>
+    </footer>
+  </section>
+  </section>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>     
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    function isStrongPassword(password) {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*])[A-Za-z\d!@#\$%\^&\*]{8,}$/;
+      return regex.test(password);
+    }
+
+    async function registerUser() {
+      document.getElementById('registerLoading').classList.remove('hidden');
+      const email = document.getElementById('emailaddress').value.trim();
+      const password = "Password@123"; // Default password
+      const name = document.getElementById('yourname').value.trim();
+
+      if (!isStrongPassword(password)) {
+        alert("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+        document.getElementById('registerLoading').classList.add('hidden');
+        return;
+      }
+
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = userCredential.user.uid;
+
+        const data = {
+          name: name,
+          email: email,
+          phone: document.getElementById('phone').value.trim(),
+          type: document.getElementById('type').value,
+          floor: document.getElementById('floor').value,
+          room: document.getElementById('room').value.trim()
+        };
+
+        await database.ref('users/' + uid).set(data);
+        await auth.sendPasswordResetEmail(email);
+
+        alert(`Registration successful!\n\nA password reset email has been sent to: ${email}\n\nPlease reset your password before logging in.`);
+
+        await auth.signOut();
+        openForm('Login');
+      } catch (error) {
+        alert("Registration Error: " + error.message);
+      } finally {
+        document.getElementById('registerLoading').classList.add('hidden');
+      }
+    }
+  </script>
+
+  <script src="javascript/main_script.js"></script>
+</body>
+</html>

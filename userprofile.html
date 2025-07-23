@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sunteck Maxx World - Complaint Management</title>
+  <link rel="shortcut icon" href="image/logo1.png" type="image/png" />
+  <link rel="stylesheet" href="css/userprofile.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <nav>
+      <a href="index.html"><img src="image/logo.png" id="logo-img" alt="Sunteck Maxx World" /></a>
+      <div class="nav-links" id="navLinks">
+        <span class="icon" onclick="hidemenu()">&times;</span>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </div>
+      <span class="icon" onclick="showmenu()">&#9776;</span>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <section id="boxesContainer">
+      <div class="clickable-box" onclick="showComplaintForm()">
+        <h2>Raise a Complaint</h2>
+        <p>Raise a ticket for quick resolution.</p>
+      </div>
+
+      <div class="clickable-box" onclick="viewComplaints()">
+        <h2>View Complaints History</h2>
+        <p>Review submitted complaints.</p>
+      </div>
+    </section>
+
+    <!-- Complaint Form -->
+    <section id="contactFormContainer" class="contact-form">
+      <h2>Submit Your Complaint / Query</h2>
+      <form id="contactForm">
+        <label>Your Name</label>
+        <input type="text" id="yourname" readonly required />
+
+        <label>Email Address</label>
+        <input type="email" id="emailaddress" readonly required />
+
+        <label>Building Wing</label>
+        <input type="text" id="wing" readonly required />
+
+        <label>Floor</label>
+        <input type="text" id="floornumber" readonly required />
+
+        <label>Room Number</label>
+        <input type="text" id="roomnumber" readonly required />
+
+        <label>Issue</label>
+        <select id="issue" required>
+          <option value="">-- Select Issue --</option>
+          <option value="Water Leakage">Water Leakage</option>
+          <option value="Electricity Problem">Electricity Problem</option>
+          <option value="Cleaning Required">Cleaning Required</option>
+          <option value="Security Issue">Security Issue</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label>Message</label>
+        <textarea id="message" placeholder="Describe your issue..." required></textarea>
+
+        <div class="form-actions">
+          <input type="submit" class="button" value="Submit" />
+        </div>
+      </form>
+
+      <button class="back-button" onclick="goBackToMain()">⬅ Back</button>
+
+      <div id="successMessage" class="success-msg" style="display: none;"></div>
+      <div id="errorMessage" class="error-msg" style="display: none;">❌ An error occurred. Please try again.</div>
+    </section>
+  </main>
+
+  <!-- Complaints History Modal -->
+  <div id="complaintsModal">
+    <div id="complaintsContent">
+      <span class="closeModal" onclick="closeComplaintsModal()">&times;</span>
+      <h2>Your Submitted Complaints</h2>
+      <ul id="complaintsList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyBe68xgZkyW9YrWEfoMFllYOOYs_rcE1QY",
+  authDomain: "gifted-relic-464211-p2.firebaseapp.com",
+  databaseURL: "https://gifted-relic-464211-p2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "gifted-relic-464211-p2",
+  storageBucket: "gifted-relic-464211-p2.firebasestorage.app",
+  messagingSenderId: "796453472313",
+  appId: "1:796453472313:web:0f1a3c936e87835bcbe5e8",
+  measurementId: "G-MX4CPBBBWC"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+    emailjs.init("MZ0izvXRMQf5i9cNK");
+
+    let currentUserEmail = "", currentUserId = "";
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUserEmail = user.email;
+        currentUserId = user.uid;
+
+        const snapshot = await database.ref('users/' + currentUserId).once('value');
+        const data = snapshot.val();
+
+        document.getElementById("yourname").value = data.name || "";
+        document.getElementById("emailaddress").value = user.email;
+        document.getElementById("wing").value = data.type || "";
+        document.getElementById("floornumber").value = data.floor || "";
+        document.getElementById("roomnumber").value = data.room || "";
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const ref = database.ref('contacts/' + currentUserId).push();
+      const complaintId = ref.key;
+      const timestamp = new Date().toISOString();
+
+      const complaintData = {
+        complaintId,
+        name: yourname.value,
+        email: emailaddress.value,
+        wing: wing.value,
+        floor: floornumber.value,
+        room: roomnumber.value,
+        issue: issue.value,
+        message: message.value,
+        timestamp
+      };
+
+      successMessage.style.display = "none";
+      errorMessage.style.display = "none";
+
+      ref.set(complaintData).then(() => {
+        sendEmailNotification(complaintData);
+        successMessage.innerText = `✅ Complaint ID: ${complaintId} submitted successfully!`;
+        successMessage.style.display = "block";
+        contactForm.reset();
+        setTimeout(() => successMessage.style.display = "none", 8000);
+      }).catch(() => errorMessage.style.display = "block");
+    });
+
+    function sendEmailNotification(data) {
+      emailjs.send("service_xzsxuuj", "template_7c6pz8h", {
+        complaint_id: data.complaintId,
+        user_name: data.name,
+        user_email: data.email,
+        user_wing: data.wing,
+        user_floor: data.floor,
+        user_room: data.room,
+        issue: data.issue,
+        message: data.message
+      });
+    }
+
+    function showmenu() {
+      navLinks.style.right = "0";
+    }
+
+    function hidemenu() {
+      navLinks.style.right = "-200px";
+    }
+
+    function logout() {
+      auth.signOut().then(() => window.location.href = 'index.html');
+    }
+
+    function showComplaintForm() {
+      boxesContainer.style.display = "none";
+      contactFormContainer.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBackToMain() {
+      contactFormContainer.style.display = "none";
+      boxesContainer.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function viewComplaints() {
+      complaintsModal.style.display = "flex";
+      complaintsList.innerHTML = "Loading...";
+
+      database.ref('contacts/' + currentUserId).once('value').then(snapshot => {
+        complaintsList.innerHTML = "";
+        if (!snapshot.exists()) {
+          complaintsList.innerHTML = "<span style='color: black;'>No complaints found.</span>";
+          return;
+        }
+
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead><tr>
+            <th>Complaint ID</th><th>Date</th><th>Time</th><th>Issue</th><th>Message</th>
+          </tr></thead><tbody></tbody>`;
+        const tbody = table.querySelector("tbody");
+
+        snapshot.forEach(child => {
+          const d = child.val(), dt = new Date(d.timestamp);
+          tbody.innerHTML += `
+            <tr>
+              <td>${d.complaintId}</td>
+              <td>${dt.toLocaleDateString()}</td>
+              <td>${dt.toLocaleTimeString()}</td>
+              <td>${d.issue}</td>
+              <td>${d.message}</td>
+            </tr>`;
+        });
+
+        complaintsList.appendChild(table);
+      });
+    }
+
+    function closeComplaintsModal() {
+      complaintsModal.style.display = "none";
+    }
+  </script>
+</body>
+</html>
